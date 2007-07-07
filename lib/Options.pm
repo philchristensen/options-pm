@@ -18,11 +18,11 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '1.42';
+our $VERSION = '1.5';
 
 
 ##################################################################
-# Options.pm 1.42
+# Options.pm 1.5
 # A perl module to provide better support for command-line option
 # parsing, hopefully better than GetOpts.
 # by Phil Christensen, 05/25/04
@@ -109,7 +109,8 @@ sub get_options{
 				my $type = $result->[0];
 				my @option = @{$result->[1]};
 				if($type eq 'params'){
-					if($args[$i + 1] !~ m/^\-{1,2}(.*)/){
+					#if($args[$i + 1] !~ m/^\-{1,2}(.*)/){
+					if($args[$i + 1] and $args[$i + 1] !~ m/^\-{1,2}(.*)/){
 						my $current = $results{$option[0]};
 						my $arg = $args[++$i];
 						if($current){
@@ -239,22 +240,40 @@ sub print_usage{
 # option will be sought on the command line (i.e., whether this
 # instance was constructed with a given option)
 #
+# sub _has_option{
+# 	my $self = shift;
+# 	my $option = shift;
+# 	my $is_param = shift;
+# 	my $key;
+# 	foreach $key('params', 'flags'){
+# 		my $options = $self->{$key};
+# 		my $index;
+# 		if(length($option) == 1){
+# 			$index = 1;
+# 		}
+# 		else{
+# 			$index = 0;
+# 		}
+# 		my $item;
+# 		foreach $item (@$options){
+# 			my @parts = @$item;
+# 			if($parts[$index] eq $option){
+# 				return [$key, $item];
+# 			}
+# 		}
+# 	}
+# 	return 0;
+# }
+
+# On Jul 6, 2007, at 6:04 PM, Ron Pero wrote
 sub _has_option{
 	my $self = shift;
 	my $option = shift;
 	my $is_param = shift;
-	my $key;
-	foreach $key('params', 'flags'){
+	foreach my $key('params', 'flags'){
 		my $options = $self->{$key};
-		my $index;
-		if(length($option) == 1){
-			$index = 1;
-		}
-		else{
-			$index = 0;
-		}
-		my $item;
-		foreach $item (@$options){
+		my $index = length($option) == 1? 1 : 0;
+		foreach my $item (@$options){
 			my @parts = @$item;
 			if($parts[$index] eq $option){
 				return [$key, $item];
@@ -263,6 +282,7 @@ sub _has_option{
 	}
 	return 0;
 }
+
 
 #
 # A private internal function to assist in making the

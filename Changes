@@ -1,0 +1,9 @@
+2007/07/08  Phil Christensen <phil@bubblehouse.org>
+    * Added changelog
+    * Added example.pl
+    * Started using Module::Build instead of ExtUtils::MakeMaker
+    * Added unit tests, pod tests, and pod coverage tests
+    * Modified POD documentation to be inline instead of appended
+    * Updated README with new POD text
+    * Updated MANIFEST for new files
+    * Implemented support for flag grouping

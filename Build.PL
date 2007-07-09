@@ -10,8 +10,7 @@ my $build = Module::Build->new(
                 'Test::More'          => 0,
                 'Test::Pod::Coverage' => 0,
                 'Test::Pod'           => '>= 1.0',
-                'Test::Unit'          => '>= 0.25',
-                'Test::Trap'          => 0
+                'Test::Unit'          => '>= 0.25'
                },
    create_makefile_pl => 'traditional'
 );

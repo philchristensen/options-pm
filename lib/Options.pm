@@ -3,9 +3,6 @@
 ##################################################################
 # Options.pm 1.5
 # 
-# A perl module to provide better support for command-line option
-# parsing, hopefully better than GetOpts.
-# 
 # Copyright (C) 2005-2007 by Phil Christensen
 ##################################################################
 
@@ -32,30 +29,29 @@ our $VERSION = '1.5';
 
 =head1 NAME
 
-Options -   A perl module to provide better support for command-line option
-			parsing, hopefully better than GetOpts.
+Options - Yet another Perl module to provide support for command-line option parsing and usage generation.
 
 =head1 SYNOPSIS
 
-	use Options;
-	
-	$options = new Options(params => [
-							['port', 'p', undef, 'The port to connect to.'],
-							['host', 'h', 'localhost', 'The host to connect to.']
-							],
-							flags =>  [
-							['secure', 's', 'Use SSL for encryption.'],
-							['quit', 'q', 'Quit after connecting.'],
-							]);
-	
-	# Parse the default option source (@ARGV)
-	%results = $options->get_options();
-	
-	# Provide usage
-	if($options->get_result('help')){
-		$options->print_usage();
-		exit(1);
-	}
+    use Options;
+    
+    $options = new Options(params => [
+                                ['port', 'p', undef, 'The port to connect to.'],
+                                ['host', 'h', 'localhost', 'The host to connect to.']
+                           ],
+                           flags =>  [
+                                ['secure', 's', 'Use SSL for encryption.'],
+                                ['quit', 'q', 'Quit after connecting.'],
+                           ]);
+    
+    # Parse the default option source (@ARGV)
+    %results = $options->get_options();
+    
+    # Provide usage
+    if($options->get_result('help')){
+        $options->print_usage();
+        exit(1);
+    }
 
 =head1 CONTENTS
 
@@ -63,36 +59,31 @@ Options -   A perl module to provide better support for command-line option
 
 =head1 DESCRIPTION
 
- Options was created to somewhat emulate the syntax of the Twisted Python's
- core usage library of the same name. It provides a parser for command-line
- options that is integrated with an automatic usage generator. Support exists
- for both flags and parameters, in long and short form, required parameters,
- and default params.
-
-=head2 EXPORT
-
-None by default.
+Options was created to somewhat emulate the syntax of the Twisted Python's
+usage library. It provides a parser for command-line options that is integrated
+with an automatic usage generator. Support exists for both flags and parameters,
+in long and short form, required parameters, and default params.
 
 =head1 GETTING OPTIONS
 
 =over 4
 
-=item new Options()
+=item * C<< new Options() >>
 
- Create a new instance of the Options class. To do so, pass the constructor
- two optional, named arguments. 'params' are command-line switches with
- arguments, while flags are boolean switches. (duh.)
+Create a new instance of the Options class. To do so, pass the constructor
+two optional, named arguments. 'params' are command-line switches with
+arguments, while flags are boolean switches. (duh.)
 
- Each argument consists of an anonymous array reference which contains
- an anonymous array for each option you wish to support.
+Each argument consists of an anonymous array reference which contains
+an anonymous array for each option you wish to support.
 
- Params arrays must be four elements long, consisting of the long and short
- versions of the switch, a default value, and a description to be printed in
- the usage guide. If the default value is specified as "undef", it becomes a
- required value, and the program will not continue without it. Options without
- defaults can specify the empty string ("") to omit the default.
+Params arrays must be four elements long, consisting of the long and short
+versions of the switch, a default value, and a description to be printed in
+the usage guide. If the default value is specified as "undef", it becomes a
+required value, and the program will not continue without it. Options without
+defaults can specify the empty string ("") to omit the default.
 
- Flags arrays are simpler, and omit the default element.
+Flags arrays are simpler, and omit the default element.
 
 =back
 
@@ -121,22 +112,22 @@ sub new{
 
 =over 4
 
-=item $options->get_options()
+=item * C<< $options->get_options() >>
 
- This method is called with no arguments, and begins the parsing of
- the global variable @ARGV, or an array passed as the first argument
- to the function. When finished, it returns a hash where the
- keys are the long option names, and the values are the result of the
- parse, i.e., strings for params, and boolean values (1 or 0 actually)
- for flag-type options.
+This method is called with no arguments, and begins the parsing of
+the global variable @ARGV, or an array passed as the first argument
+to the function. When finished, it returns a hash where the
+keys are the long option names, and the values are the result of the
+parse, i.e., strings for params, and boolean values (1 or 0 actually)
+for flag-type options.
 
- If the parser encounters an unknown flag, or a bare word without a
- recognized switch before it, these are left in the @ARV array in the
- order they are found, so that a script can do additional processing of
- @ARGV.
+If the parser encounters an unknown flag, or a bare word without a
+recognized switch before it, these are left in the @ARV array in the
+order they are found, so that a script can do additional processing of
+@ARGV.
 
- If the result is missing a required parameter, the module prints the
- usage table, and exits with a 1 status code.
+If the result is missing a required parameter, the module prints the
+usage table, and exits with a 1 status code.
 
 =back
 
@@ -249,16 +240,16 @@ sub get_options{
 
 =over 4
 
-=item $options->get_result(option)
+=item * C<< $options->get_result(option) >>
 
- Although get_options returns a hash, and that is an
- acceptable way to use the results, this function provides
- some level of convenience when dealing with options that
- may return a reference to a list of results for that option.
- When called in a list context, this will return a list of
- results, even if only one argument was provided.
- However, calling it in a scalar context when there are
- multiple arguments will be, shall we say, disappointing.
+Although get_options returns a hash, and that is an
+acceptable way to use the results, this function provides
+some level of convenience when dealing with options that
+may return a reference to a list of results for that option.
+When called in a list context, this will return a list of
+results, even if only one argument was provided.
+However, calling it in a scalar context when there are
+multiple arguments will be, shall we say, disappointing.
 
 =back
 
@@ -279,11 +270,11 @@ sub get_result{
 
 =over 4
 
-=item $options->print_usage($optional_message)
+=item * C<< $options->print_usage($optional_message) >>
 
- Options will automatically display usage information if a required
- parameter is omitted, but this method can be used to implement a
- --help parameter.
+Options will automatically display usage information if a required
+parameter is omitted, but this method can be used to implement a
+--help parameter.
 
 =back
 

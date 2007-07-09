@@ -406,11 +406,23 @@ sub _pad{
 sub _found_error{
 	my $self = shift;
 	my $reason = shift;
-	$self->print_usage($reason);
-	if($self->{'exit'}){
-		exit(1);
+	
+	my $error_handler = $self->{'error_handler'};
+	my $result;
+	if(defined($error_handler)){
+		$result = $error_handler->($self, $reason);
 	}
-	die($reason);
+	else{
+		$self->print_usage($reason);
+		$result = 0;
+	}
+	
+	unless($result){
+		if($self->{'exit'}){
+			exit(1);
+		}
+		die($reason);
+	}
 }
 
 1;

@@ -1,3 +1,11 @@
+2007/07/10  Phil Christensen <phil@bubblehouse.org>
+    * Added $options->{'error_handler'} hook
+    * Added $options->{'usage_fh'} hook
+    * Added documentation on error_handler
+    * Added documentation on usage_fh
+    * Fixed documentation bugs
+    * Other small bugfixes
+
 2007/07/08  Phil Christensen <phil@bubblehouse.org>
     * Added changelog
     * Added example.pl

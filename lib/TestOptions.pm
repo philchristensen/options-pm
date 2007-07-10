@@ -33,14 +33,14 @@ sub set_up {
 	
 	$self->{'options'}->{'exit'} = undef;
 	
-	$self->{'options'}->{'err_handle_variable'} = '';
-	open STRINGIO, '+>', \$self->{'options'}->{'err_handle_variable'} or die $!;
-	$self->{'options'}->{'err_handle'} = \*STRINGIO;
+	$self->{'options'}->{'usage_fh_variable'} = '';
+	open STRINGIO, '+>', \$self->{'options'}->{'usage_fh_variable'} or die $!;
+	$self->{'options'}->{'usage_fh'} = \*STRINGIO;
 }
 
 sub tear_down {
 	my $self = shift;
-	close($self->{'options'}->{'err_handle'});
+	close($self->{'options'}->{'usage_fh'});
 	$self->{'options'} = undef;
 }
 
@@ -72,7 +72,7 @@ sub test_broken_group_flags {
 	};
 
 	$self->assert_not_null($@, 'Improperly grouped parameter did not kill the script.');
-	$self->assert_not_equals('', $self->{'options'}->{'err_handle_variable'},
+	$self->assert_not_equals('', $self->{'options'}->{'usage_fh_variable'},
 					"No usage information found after improperly grouped parameter.");
 }
 
@@ -84,9 +84,9 @@ sub test_broken_group_flags2 {
 		return $self->{'options'}->get_options(@args);
 	};
 
-	my $err_handle = $self->{'options'}->{'err_handle'};
-	seek($err_handle, 0, 0);
-	my @usage = <$err_handle>;
+	my $usage_fh = $self->{'options'}->{'usage_fh'};
+	seek($usage_fh, 0, 0);
+	my @usage = <$usage_fh>;
 	my $usage = join("\n", @usage);
 	
 	$self->assert_not_null($@, 'Unknown grouped flag did not kill the script.');
@@ -101,9 +101,9 @@ sub test_required {
 		return $self->{'options'}->get_options(@args);
 	};
 	
-	my $err_handle = $self->{'options'}->{'err_handle'};
-	seek($err_handle, 0, 0);
-	my @usage = <$err_handle>;
+	my $usage_fh = $self->{'options'}->{'usage_fh'};
+	seek($usage_fh, 0, 0);
+	my @usage = <$usage_fh>;
 	my $usage = join("\n", @usage);
 	
 	$self->assert_null($result{'host'}, "Shouldn't have gotten a 'host' value.");

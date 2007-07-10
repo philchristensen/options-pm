@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '1.5';
+our $VERSION = '1.51';
 
 =head1 NAME
 
@@ -36,13 +36,13 @@ Options - Yet another Perl module to provide support for command-line option par
     use Options;
     
     $options = new Options(params => [
-                                ['port', 'p', undef, 'The port to connect to.'],
-                                ['host', 'h', 'localhost', 'The host to connect to.']
+                                ['port',   'p', undef,       'The port to connect to.'],
+                                ['host',   'h', 'localhost', 'The host to connect to.']
                            ],
                            flags =>  [
                                 ['secure', 's', 'Use SSL for encryption.'],
-                                ['quit', 'q', 'Quit after connecting.'],
-                                ['help', 'h', 'Display this usage guide.'],
+                                ['quit',   'q', 'Quit after connecting.'],
+                                ['help',   'h', 'Display this usage guide.'],
                            ]);
     
     # Parse the default option source (@ARGV)
@@ -56,7 +56,7 @@ Options - Yet another Perl module to provide support for command-line option par
 
 =head1 CONTENTS
 
- Options 1.50
+ Options 1.51
 
 =head1 DESCRIPTION
 
@@ -116,19 +116,21 @@ sub new{
 =item * C<< $options->get_options() >>
 
 This method is called with no arguments, and begins the parsing of
-the global variable @ARGV, or an array passed as the first argument
+the global variable C<@ARGV>, or an array passed as the first argument
 to the function. When finished, it returns a hash where the
 keys are the long option names, and the values are the result of the
 parse, i.e., strings for params, and boolean values (1 or 0 actually)
 for flag-type options.
 
 If the parser encounters an unknown flag, or a bare word without a
-recognized switch before it, these are left in the @ARV array in the
-order they are found, so that a script can do additional processing of
-@ARGV.
+recognized switch before it, these are left in the C<$options-E<gt>{'unrecognized'}> array in the
+order they are found.
+
+If no array was passed in (i.e., C<@ARGV> was parsed), the unrecognized items
+are left in C<@ARGV> so that a script can do additional processing.
 
 If the result is missing a required parameter, the module prints the
-usage table, and exits with a 1 status code.
+usage table, and calls C<exit(1)>.
 
 =back
 
@@ -140,7 +142,6 @@ sub get_options{
 	unless(@args){
 		@args = @ARGV;
 	}
-	$self->{'last_args'} = \@args;
 	
 	my @unrecognized = ();
 	my %results = ();
@@ -235,6 +236,8 @@ sub get_options{
 	unless(@_){
 		@ARGV = @unrecognized;
 	}
+	
+	$self->{'unrecognized'} = @unrecognized;
 	$self->{'results'} = \%results;
 	return %results;
 }
@@ -243,7 +246,7 @@ sub get_options{
 
 =item * C<< $options->get_result(option) >>
 
-Although get_options returns a hash, and that is an
+Although C<get_options()> returns a hash, and that is an
 acceptable way to use the results, this function provides
 some level of convenience when dealing with options that
 may return a reference to a list of results for that option.
@@ -275,21 +278,24 @@ sub get_result{
 
 Options will automatically display usage information if a required
 parameter is omitted, but this method can be used to implement a
---help parameter.
+C<--help> parameter.
 
 =back
 
 =cut
 sub print_usage{
 	my $self = shift;
-	my $reason = shift or '';
+	my $reason = shift;
+	unless(defined($reason)){
+		$reason = '';
+	}
 	
-	my $err_handle;
-	if($self->{'err_handle'}){
-		$err_handle = $self->{'err_handle'};
+	my $usage_fh;
+	if($self->{'usage_fh'}){
+		$usage_fh = $self->{'usage_fh'};
 	}
 	else{
-		$err_handle = \*STDERR;
+		$usage_fh = \*STDERR;
 	}
 	
 	my $app = $self->{'last_args'}[0];
@@ -297,9 +303,9 @@ sub print_usage{
 		$app = $0;
 	}
 	
-	print $err_handle "$reason\n\n";
-	print $err_handle "Usage: $app [options]\n";
-	print $err_handle "Options:\n";
+	print $usage_fh "$reason\n\n";
+	print $usage_fh "Usage: $app [options]\n";
+	print $usage_fh "Options:\n";
 	
 	my $item;
 	my @rows = ();
@@ -331,9 +337,60 @@ sub print_usage{
 	
 	foreach $item (@rows){
 		my @row = @$item;
-		print $err_handle _pad($row[0], $max_width + 2), $row[1], "\n";
+		print $usage_fh _pad($row[0], $max_width + 2), $row[1], "\n";
 	}
 }
+
+=head1 ADVANCED USAGE
+
+Options.pm has a couple of hidden hooks that you may find useful when using
+the module in different ways.
+
+The first allows you to control the default behavior when an error occurs:
+
+    $options->{'exit'} = 0;
+
+When this flag has been set to 0, C<get_options()> will no longer call
+C<exit(1)> after printing the usage when an error occurs. Instead it will
+simply call C<die($reason)>, which you can trap in an C<eval> block.
+
+The second (and more interesting) hook also allows you to specify a subroutine
+reference to execute when an error occurs in C<get_options()>. For example, the
+following code will replicate the default behavior of C<get_options()>:
+
+    $options->{'error_handler'} = sub {
+        # the Options instance
+        $self = shift;
+        
+        # what caused the error
+        $error_msg = shift;
+        
+        # Do whatever you need to do here, possibly
+        # including calling print_usage()
+        
+        # Returning true would ignore all errors, and attempt
+        # to parse as much as possible, whereas false will
+        # exit immediately with an error code of 1
+        return 0;
+    };
+
+Finally, if you want to do something else with the output of C<print_usage()>,
+you can have it sent to any filehandle object you have kicking around.
+
+For example, if you're on Perl 5.8.6, you can use the StringIO services to
+retrieve a string version of the usage text:
+
+	open(STRINGIO, '+>', \$usage_text) or die $!;
+	$options->{'usage_fh'} = \*STRINGIO;
+	...
+	...
+	...
+	$options->get_options();
+	@usage_lines = <$options->{'usage_fh'}>;
+	
+	# don't forget to close the handle
+	close($options->{'usage_fh'});
+
 
 =head1 AUTHOR
 

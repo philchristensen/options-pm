@@ -42,6 +42,7 @@ Options - Yet another Perl module to provide support for command-line option par
                            flags =>  [
                                 ['secure', 's', 'Use SSL for encryption.'],
                                 ['quit', 'q', 'Quit after connecting.'],
+                                ['help', 'h', 'Display this usage guide.'],
                            ]);
     
     # Parse the default option source (@ARGV)
@@ -281,7 +282,7 @@ parameter is omitted, but this method can be used to implement a
 =cut
 sub print_usage{
 	my $self = shift;
-	my $reason = shift;
+	my $reason = shift or '';
 	
 	my $err_handle;
 	if($self->{'err_handle'}){

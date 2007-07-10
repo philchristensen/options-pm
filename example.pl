@@ -16,7 +16,7 @@ my $options = new Options(params => [
 						]);
 
 # Parse the default option source (@ARGV)
-%results = $options->get_options();
+my %results = $options->get_options();
 
 # Provide usage
 if($options->get_result('help')){

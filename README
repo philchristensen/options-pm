@@ -24,7 +24,7 @@ SYNOPSIS
             }
 
 CONTENTS
-     Options 1.50
+     Options 1.5.2
 
 DESCRIPTION
      Options was created to somewhat emulate the syntax of the Twisted Python's

@@ -6,7 +6,7 @@ example.pl
 MANIFEST
 README
 lib/Options.pm
-lib/TestOptions.pm
+lib/Options/Test.pm
 t/pod.t
 t/pod-coverage.t
 t/options.t

@@ -1,3 +1,8 @@
+2007/07/29  Phil Christensen <phil@bubblehouse.org>
+    * Moved TestOptions to Options::Test (I didn't know I'd
+      be cluttering the CPAN namespace -- I thought I had to
+      specifically declare a namespace on PAUSE)
+
 2007/07/10  Phil Christensen <phil@bubblehouse.org>
     * Added $options->{'error_handler'} hook
     * Added $options->{'usage_fh'} hook

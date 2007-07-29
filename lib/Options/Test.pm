@@ -12,7 +12,7 @@ use strict;
 use warnings;
 
 use Options;
-package TestOptions;
+package Options::Test;
 use base qw(Test::Unit::TestCase);
 
 sub new {
